@@ -84,21 +84,16 @@ def create_account(courses, save_file):
     with open(save_file, 'w') as f:
             json.dump(weekly_log, f)
 
-
-    
-
 if __name__ == "__main__":
 
-    changes_made = False
+    print("----------------------------------------------------------------")
+    print("--------------WELCOME TO STUDY TRACKER (BETA 1.4)---------------")
+    print("----------------------------------------------------------------")
+
     daily_log = dict()
-    
-    
-    print("----------------------------------------------------------------")
-    print("--------------WELCOME TO STUDY TRACKER (BETA 1.3)---------------")
-    print("----------------------------------------------------------------")
-
     save_file = Path("log.json")
-
+    
+#Save file creation
     if not save_file.exists():
         
         print("Account not found.")
@@ -123,9 +118,7 @@ if __name__ == "__main__":
             else:
                 print("Invalid input.")
 
-
-    
-
+#Open save file
     with open(save_file, 'r') as f:  
         weekly_log = json.load(f)
 
@@ -146,12 +139,11 @@ if __name__ == "__main__":
             daily_log[subject] = "00:00:00"
 
         daily_log["TOTAL"] = "00:00:00"
-        changes_made = True
         print("Today is", today)
 
+#Main Loop
     while True:
 
-        print()
         selection = input("[1] Track Study Time\n" +
                         "[2] See Today's Progress\n" +
                         "[3] See Log\n" +
@@ -165,18 +157,20 @@ if __name__ == "__main__":
 
                 for i in range(len(subjects)):
                     print("[", i + 1, "] ", subjects[i], "\n", sep="", end="")
-
+                
                 selection = input()
-
+                if selection.isdigit():
+                    if int(selection) < len(subjects) + 1:
+                        track(selection, subjects)
+                        print()
+                        continue
+                
+                print("INVALID SELECTION.")
                 print()
-                track(selection, subjects)
-                print()
 
-                changes_made = True
             
             case "2":
-                print()
-                print("-" * 16)
+                print("-" * 20)
                 print("Today's Hours:")
 
                 for i in range(len(subjects)):
@@ -184,18 +178,17 @@ if __name__ == "__main__":
 
                 print()
                 print("Time spent studying today:", daily_log["TOTAL"])
-                print("-" * 16)
+                print("-" * 20)
                 print()
                 print("Press any key to continue...")
                 selection = input()
-                print()
 
             case "3":
 
                 with open(save_file, 'r') as f2:
                     weekly_log = json.load(f2)
 
-                print()
+                print("-" * 20)
                 print("Log:")
                 print_dict = dict()
 
@@ -205,11 +198,11 @@ if __name__ == "__main__":
                         
                     for i in range(len(subjects)):
                         print(subjects[i], "[", print_dict[subjects[i]], "] ", sep="")
-                
-                print()
+                    print()
+
+                print("-" * 20)
                 print("Press any key to continue...")
                 selection = input()
-                print()
                             
             case "4":
                 x = input("Are you sure you want to delete your account? [y/n]")
@@ -223,12 +216,12 @@ if __name__ == "__main__":
             case "q":
                 break
 
-    if changes_made:
-        with open(save_file, 'w') as f:
-            json.dump(weekly_log, f)
-            print("Progress saved.")
+    weekly_log[today] = daily_log
+
+    with open(save_file, 'w') as f:
+        json.dump(weekly_log, f)
+        print("Progress saved.")
 
     print()
     print("SESSION END")
     sys.exit()
-    
